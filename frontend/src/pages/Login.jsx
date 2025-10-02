@@ -1,27 +1,23 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password
-      });
-      // Save JWT token
-      localStorage.setItem("token", res.data.token);
-      setUser(res.data.user);
-      navigate("/books"); // redirect to book list page
+      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+      console.log("Login response:", res.data);
+      login(res.data.token); // store token only
+      navigate("/"); // redirect to home
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error.response?.data || error);
       alert(error.response?.data?.message || "Login failed!");
     }
   };

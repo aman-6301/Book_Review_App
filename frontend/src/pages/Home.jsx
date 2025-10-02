@@ -1,9 +1,6 @@
-function Home() {
-  return (
-    <div className="text-center mt-20">
-      <h1 className="text-3xl font-bold">Welcome to Book Review Platform</h1>
-    </div>
-  )
-}
+import BookList from "../components/BookList";
 
-export default Home
+function Home() {
+  return <BookList />;
+}
+export default Home;
