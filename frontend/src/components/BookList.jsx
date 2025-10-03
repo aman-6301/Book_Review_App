@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
-import StarRating from "../components/StarRating";
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -10,12 +9,42 @@ function BookList() {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const res = await api.get(`/books?page=${page}`);
-      setBooks(res.data.books);
-      setTotalPages(res.data.totalPages);
+      try {
+        // Get paginated books
+        const res = await api.get(`/books?page=${page}`);
+        const booksData = res.data.books;
+
+        // Fetch average rating for each book
+        const booksWithRating = await Promise.all(
+          booksData.map(async (book) => {
+            try {
+              const ratingRes = await api.get(`/reviews/book/${book._id}`);
+              return { ...book, averageRating: parseFloat(ratingRes.data.averageRating) };
+            } catch {
+              return { ...book, averageRating: 0 };
+            }
+          })
+        );
+
+        setBooks(booksWithRating);
+        setTotalPages(res.data.totalPages);
+      } catch (err) {
+        console.error(err.response?.data || err.message);
+        alert("Failed to fetch books");
+      }
     };
+
     fetchBooks();
   }, [page]);
+
+  const renderStars = (rating) => {
+    const rounded = Math.round(rating);
+    return (
+      <span className="text-yellow-500">
+        {"★".repeat(rounded) + "☆".repeat(5 - rounded)}
+      </span>
+    );
+  };
 
   return (
     <div>
@@ -29,14 +58,14 @@ function BookList() {
           >
             <h3 className="font-semibold">{book.title}</h3>
             <p>{book.author}</p>
-            {/* Add stars for average rating */}
-            <StarRating
-              rating={Math.round(book.averageRating || 0)}
-              editable={false}
-            />
+            <div className="flex items-center space-x-2">
+              {renderStars(book.averageRating)}
+              <span className="text-gray-600">{book.averageRating.toFixed(1)}/5</span>
+            </div>
           </Link>
         ))}
       </div>
+
       <div className="flex justify-center mt-4 space-x-2">
         {[...Array(totalPages)].map((_, i) => (
           <button
@@ -53,4 +82,5 @@ function BookList() {
     </div>
   );
 }
+
 export default BookList;

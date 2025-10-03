@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import BookDetails from "./components/BookDetails";
 import { useAuth } from "./context/AuthContext";
-import Profile from "./pages/Profile";
+
 
 function App() {
   const { token } = useAuth();
