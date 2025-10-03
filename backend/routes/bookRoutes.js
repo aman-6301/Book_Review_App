@@ -33,13 +33,29 @@ router.get("/", async (req, res) => {
     const limit = 5;
     const skip = (page - 1) * limit;
 
-    const books = await Book.find()
-      .populate("addedBy", "_id name email") // ✅ populate addedBy
+    const { search, genre, sort } = req.query;
+
+    // Build filter object
+    let filter = {};
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { author: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (genre) filter.genre = genre;
+
+    // Sorting
+    let sortObj = { createdAt: -1 }; // default newest first
+    if (sort === "year") sortObj = { year: -1 }; // newest year first
+
+    const books = await Book.find(filter)
+      .populate("addedBy", "_id name email")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort(sortObj);
 
-    const total = await Book.countDocuments();
+    const total = await Book.countDocuments(filter);
 
     res.json({
       books,
@@ -50,6 +66,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // 📖 Get single book
 router.get("/:id", async (req, res) => {
