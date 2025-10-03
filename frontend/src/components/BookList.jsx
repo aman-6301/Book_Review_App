@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
+import StarRating from "../components/StarRating";
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -28,6 +29,11 @@ function BookList() {
           >
             <h3 className="font-semibold">{book.title}</h3>
             <p>{book.author}</p>
+            {/* Add stars for average rating */}
+            <StarRating
+              rating={Math.round(book.averageRating || 0)}
+              editable={false}
+            />
           </Link>
         ))}
       </div>
@@ -36,7 +42,9 @@ function BookList() {
           <button
             key={i}
             onClick={() => setPage(i + 1)}
-            className={`px-3 py-1 border ${page === i + 1 ? "bg-blue-500 text-white" : ""}`}
+            className={`px-3 py-1 border ${
+              page === i + 1 ? "bg-blue-500 text-white" : ""
+            }`}
           >
             {i + 1}
           </button>
