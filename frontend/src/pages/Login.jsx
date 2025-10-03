@@ -14,7 +14,7 @@ function Login() {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
       console.log("Login response:", res.data);
-      login(res.data.token); // store token only
+      login(res.data.token,res.data.user); // store token only
       navigate("/"); // redirect to home
     } catch (error) {
       console.error("Login error:", error.response?.data || error);

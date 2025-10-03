@@ -17,6 +17,9 @@ router.post("/", protect, async (req, res) => {
       addedBy: req.user.id,
     });
 
+    // Populate addedBy before sending response
+    await book.populate("addedBy", "_id name email");
+
     res.status(201).json(book);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,7 +34,7 @@ router.get("/", async (req, res) => {
     const skip = (page - 1) * limit;
 
     const books = await Book.find()
-      .populate("addedBy", "name email")
+      .populate("addedBy", "_id name email") // ✅ populate addedBy
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -51,7 +54,7 @@ router.get("/", async (req, res) => {
 // 📖 Get single book
 router.get("/:id", async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id).populate("addedBy", "name");
+    const book = await Book.findById(req.params.id).populate("addedBy", "_id name email"); // ✅ populate addedBy
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     res.json(book);
@@ -78,6 +81,8 @@ router.put("/:id", protect, async (req, res) => {
     book.year = year || book.year;
 
     const updatedBook = await book.save();
+    await updatedBook.populate("addedBy", "_id name email"); // ✅ populate before sending
+
     res.json(updatedBook);
   } catch (error) {
     res.status(500).json({ message: error.message });
