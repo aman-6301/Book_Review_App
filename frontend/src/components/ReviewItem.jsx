@@ -3,7 +3,7 @@ import StarRating from "./StarRating";
 import api from "../utils/api";
 
 function ReviewItem({ review, currentUser, onUpdate, onDelete }) {
-  const isOwner = currentUser?._id === review.userId;
+  const isOwner = currentUser?._id === review.userId?._id;
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(review.reviewText);
   const [rating, setRating] = useState(review.rating);

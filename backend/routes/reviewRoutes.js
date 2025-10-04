@@ -72,7 +72,7 @@ router.get("/book/:bookId", async (req, res) => {
   try {
     const bookId = req.params.bookId;
 
-    const reviews = await Review.find({ bookId }).populate("userId", "name");
+    const reviews = await Review.find({ bookId }).populate("userId", "name _id");
     if (!reviews) return res.status(404).json({ message: "No reviews yet" });
 
     // Calculate average rating
