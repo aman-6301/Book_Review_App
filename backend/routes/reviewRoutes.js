@@ -85,4 +85,27 @@ router.get("/book/:bookId", async (req, res) => {
   }
 });
 
+// 📊 Rating distribution for a book (1–5 stars)
+router.get("/book/:bookId/distribution", async (req, res) => {
+  try {
+    const bookId = req.params.bookId;
+
+    const reviews = await Review.find({ bookId });
+    if (!reviews.length) {
+      return res.json({ distribution: [0, 0, 0, 0, 0] });
+    }
+
+    const distribution = [0, 0, 0, 0, 0]; // index 0=1★, 1=2★, etc.
+    reviews.forEach((r) => {
+      if (r.rating >= 1 && r.rating <= 5) {
+        distribution[r.rating - 1] += 1;
+      }
+    });
+
+    res.json({ distribution });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

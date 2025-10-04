@@ -5,6 +5,7 @@ import api from "../utils/api";
 import ReviewForm from "../components/ReviewForm";
 import ReviewItem from "../components/ReviewItem";
 import StarRating from "../components/StarRating";
+import RatingChart from "../components/RatingChart"; // ✅ Import chart
 
 function BookDetails() {
   const { id } = useParams();
@@ -101,14 +102,19 @@ function BookDetails() {
         </div>
       )}
 
+      {/* Rating Chart ✅ */}
+      <RatingChart bookId={book._id} />
+
       {/* Reviews */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-2">
           Reviews ({reviews.length}) - Average:{" "}
           <StarRating rating={Math.round(averageRating)} />
         </h3>
-       
-        {user && <ReviewForm bookId={book._id} currentUser={user} onAdd={handleAddReview} />}
+
+        {user && (
+          <ReviewForm bookId={book._id} currentUser={user} onAdd={handleAddReview} />
+        )}
 
         {reviews.map((r) => (
           <ReviewItem

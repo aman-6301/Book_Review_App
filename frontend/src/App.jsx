@@ -7,13 +7,14 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import BookDetails from "./components/BookDetails";
 import { useAuth } from "./context/AuthContext";
-
+import { useTheme } from "./context/ThemeContext"; // ✅ import theme hook
 
 function App() {
   const { token } = useAuth();
+  const { theme } = useTheme(); // ✅ get current theme
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Navbar />
       <div className="max-w-5xl mx-auto p-4">
         <Routes>
@@ -25,7 +26,6 @@ function App() {
           <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
           <Route path="/signup" element={!token ? <Signup /> : <Navigate to="/" />} />
         </Routes>
-        
       </div>
     </div>
   );
